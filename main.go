@@ -22,8 +22,9 @@ import (
 
 	kubeinformers "k8s.io/client-go/informers"
 	"k8s.io/client-go/kubernetes"
-	"k8s.io/client-go/tools/clientcmd"
+	"k8s.io/client-go/rest"
 	"k8s.io/klog/v2"
+
 	// Uncomment the following line to load the gcp plugin (only required to authenticate against GKE clusters).
 	// _ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
 
@@ -44,9 +45,15 @@ func main() {
 	// set up signals so we handle the first shutdown signal gracefully
 	stopCh := signals.SetupSignalHandler()
 
-	cfg, err := clientcmd.BuildConfigFromFlags(masterURL, kubeconfig)
+	// cfg, err := clientcmd.BuildConfigFromFlags(masterURL, kubeconfig)
+	// if err != nil {
+	// 	klog.Fatalf("Error building kubeconfig: %s", err.Error())
+	// }
+
+	// creates the in-cluster config
+	cfg, err := rest.InClusterConfig()
 	if err != nil {
-		klog.Fatalf("Error building kubeconfig: %s", err.Error())
+		panic(err.Error())
 	}
 
 	kubeClient, err := kubernetes.NewForConfig(cfg)
